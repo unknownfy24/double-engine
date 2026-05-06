@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#1A1A2E"/>
+  <!-- Left cylinder -->
+  <rect x="8" y="20" width="20" height="28" rx="3" fill="#1A1A2E" stroke="#E63946" stroke-width="1.5"/>
+  <!-- Left piston head -->
+  <rect x="5" y="14" width="26" height="10" rx="3" fill="#E63946"/>
+  <!-- Left rod -->
+  <rect x="16" y="48" width="5" height="10" rx="2" fill="#E63946"/>
+  <!-- Right cylinder -->
+  <rect x="36" y="20" width="20" height="28" rx="3" fill="#E63946"/>
+  <!-- Right piston head -->
+  <rect x="33" y="14" width="26" height="10" rx="3" fill="#1A1A2E" stroke="#E63946" stroke-width="1.5"/>
+  <!-- Right rod -->
+  <rect x="43" y="48" width="5" height="10" rx="2" fill="#1A1A2E"/>
+  <!-- Crankshaft -->
+  <rect x="5" y="56" width="54" height="4" rx="2" fill="#888"/>
+  <!-- Overlap bolt -->
+  <circle cx="36" cy="24" r="3" fill="white" opacity="0.9"/>
+</svg>
