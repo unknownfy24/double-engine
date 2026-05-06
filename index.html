@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Double Engine — All Gas. Zero Tokens.</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg-pistons {
+      position: absolute;
+      inset: 0;
+      opacity: 0.04;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 60px, var(--red) 60px, var(--red) 62px),
+        repeating-linear-gradient(90deg, transparent, transparent 60px, var(--red) 60px, var(--red) 62px);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero h1 {
+      font-size: clamp(3.5rem, 9vw, 7rem);
+      font-weight: 700;
+      line-height: 1.0;
+      color: var(--white);
+      animation: fadeUp 0.7s ease 0.1s both;
+    }
+
+    .hero h1 .line-red {
+      color: var(--red);
+      display: block;
+    }
+
+    .hero-sub {
+      margin-top: 1.5rem;
+      font-size: 1.15rem;
+      color: var(--gray);
+      max-width: 520px;
+      line-height: 1.6;
+      animation: fadeUp 0.7s ease 0.2s both;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.7s ease 0.3s both;
+    }
+
+    .hero-gauge {
+      margin-top: 4rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: fadeUp 0.7s ease 0.4s both;
+    }
+
+    .gauge-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--gray);
+      text-transform: uppercase;
+    }
+
+    .gauge-bar {
+      width: 200px;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .gauge-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--red), #ff6b35);
+      border-radius: 3px;
+      animation: fillGauge 2s ease 1s both;
+    }
+
+    @keyframes fillGauge {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    .gauge-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    /* ── ENGINE MARK (animated pistons) ── */
+    .hero-engine {
+      position: absolute;
+      right: 8%;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    @keyframes piston-left {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes piston-right {
+      0%, 100% { transform: translateY(-20px); }
+      50% { transform: translateY(0); }
+    }
+
+    .piston-l { animation: piston-left 1.2s ease-in-out infinite; }
+    .piston-r { animation: piston-right 1.2s ease-in-out infinite; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-strip {
+      background: var(--red);
+      padding: 0.75rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .marquee-inner {
+      display: inline-flex;
+      gap: 3rem;
+      animation: marquee 18s linear infinite;
+    }
+
+    .marquee-inner span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+
+    .marquee-inner .dot {
+      color: rgba(255,255,255,0.5);
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ── ABOUT SECTION ── */
+    .about {
+      background: var(--light);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about-text h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+
+    .about-text p {
+      color: #555;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .about-text p strong { color: var(--navy); }
+
+    .about-card {
+      background: var(--navy);
+      border-radius: 12px;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--red);
+    }
+
+    .about-card-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-stat {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #2a2a4a;
+    }
+
+    .about-stat:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+    .about-stat-num {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .about-stat-num span { color: var(--red); }
+
+    .about-stat-desc {
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-top: 0.3rem;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      background: var(--white);
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .features-header h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+    }
+
+    .features-header p {
+      color: var(--gray);
+      margin-top: 0.75rem;
+      font-size: 1rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      border: 2px solid var(--light);
+      border-radius: 10px;
+      padding: 2rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--red);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--navy);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      font-size: 1.4rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .feature-card p {
+      font-size: 0.85rem;
+      color: var(--gray);
+      line-height: 1.65;
+    }
+
+    .feature-card .badge {
+      display: inline-block;
+      margin-top: 0.75rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--red);
+      background: rgba(230,57,70,0.08);
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+    }
+
+    /* ── ORIGIN STORY ── */
+    .origin {
+      background: var(--navy);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .origin::before {
+      content: '"';
+      position: absolute;
+      top: -2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 20rem;
+      color: rgba(255,255,255,0.02);
+      font-family: Georgia, serif;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .origin-quote {
+      font-size: clamp(1.3rem, 3vw, 2.2rem);
+      font-weight: 500;
+      color: var(--white);
+      line-height: 1.5;
+      max-width: 800px;
+      margin: 0 auto 2rem;
+    }
+
+    .origin-quote em {
+      font-style: normal;
+      color: var(--red);
+    }
+
+    .origin-attr {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--gray);
+    }
+
+    .origin-timeline {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-top: 4rem;
+    }
+
+    .timeline-step {
+      flex: 1;
+      max-width: 220px;
+      text-align: center;
+      position: relative;
+      padding: 0 1rem;
+    }
+
+    .timeline-step::after {
+      content: '→';
+      position: absolute;
+      right: -0.5rem;
+      top: 1rem;
+      color: var(--red);
+      font-size: 1.2rem;
+    }
+
+    .timeline-step:last-child::after { display: none; }
+
+    .timeline-num {
+      width: 40px;
+      height: 40px;
+      background: var(--red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--white);
+      margin: 0 auto 0.75rem;
+    }
+
+    .timeline-text {
+      font-size: 0.8rem;
+      color: var(--gray);
+      line-height: 1.5;
+    }
+
+    /* ── CTA STRIP ── */
+    .cta-strip {
+      background: var(--red);
+      padding: 5rem 2rem;
+      text-align: center;
+    }
+
+    .cta-strip h2 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+
+    .cta-strip p {
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .hero-engine { display: none; }
+      .origin-timeline { flex-direction: column; align-items: center; gap: 1rem; }
+      .timeline-step::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg class="nav-logo-mark" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="18" width="18" height="26" rx="3" fill="#1A1A2E"/>
+      <rect x="7" y="14" width="24" height="8" rx="2" fill="#E63946"/>
+      <rect x="17" y="44" width="4" height="8" rx="2" fill="#E63946"/>
+      <rect x="32" y="18" width="18" height="26" rx="3" fill="#E63946"/>
+      <rect x="29" y="14" width="24" height="8" rx="2" fill="#1A1A2E"/>
+      <rect x="39" y="44" width="4" height="8" rx="2" fill="#1A1A2E"/>
+      <rect x="7" y="50" width="46" height="4" rx="2" fill="#888"/>
+    </svg>
+    <div class="nav-logo-text">
+      <span>DOUBLE</span>
+      <span>ENGINE</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="openclaw.html">OpenClaw</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="pricing.html" class="nav-cta">Start Engine</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-pistons"></div>
+
+  <div class="hero-engine">
+    <svg width="320" height="320" viewBox="0 0 320 320" fill="none">
+      <g class="piston-l">
+        <rect x="40" y="80" width="90" height="130" rx="8" fill="#E63946"/>
+        <rect x="30" y="60" width="110" height="32" rx="6" fill="#E63946"/>
+        <rect x="78" y="210" width="16" height="50" rx="4" fill="#E63946"/>
+      </g>
+      <g class="piston-r">
+        <rect x="190" y="80" width="90" height="130" rx="8" fill="#ffffff"/>
+        <rect x="180" y="60" width="110" height="32" rx="6" fill="#ffffff"/>
+        <rect x="228" y="210" width="16" height="50" rx="4" fill="#ffffff"/>
+      </g>
+      <rect x="30" y="258" width="290" height="14" rx="7" fill="#888"/>
+    </svg>
+  </div>
+
+  <p class="hero-eyebrow">⚙ Introducing Double Engine AI — v1.0 "Jenn Edition"</p>
+
+  <h1>
+    ALL GAS.
+    <span class="line-red">ZERO TOKENS.</span>
+  </h1>
+
+  <p class="hero-sub">
+    The world's first AI model powered entirely by combustion energy.
+    No context windows. No rate limits. Just an engine that runs until
+    you run out of gas. (You won't.)
+  </p>
+
+  <div class="hero-ctas">
+    <a href="pricing.html" class="btn btn-primary">🔥 Start Your Engine</a>
+    <a href="#features" class="btn btn-secondary">Check Under the Hood</a>
+  </div>
+
+  <div class="hero-gauge">
+    <span class="gauge-label">Gas Tank</span>
+    <div class="gauge-bar">
+      <div class="gauge-fill" style="width:100%"></div>
+    </div>
+    <span class="gauge-val">∞ GAL</span>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span>ALL GAS</span><span class="dot">·</span>
+    <span>ZERO TOKENS</span><span class="dot">·</span>
+    <span>NO CONTEXT WINDOW</span><span class="dot">·</span>
+    <span>RUNS ON PREMIUM</span><span class="dot">·</span>
+    <span>HALLUCINATIONS ARE CALLED EMISSIONS HERE</span><span class="dot">·</span>
+    <span>TRAINED ON DIESEL FUMES</span><span class="dot">·</span>
+    <span>PERFORMANCE · POWER · PRECISION</span><span class="dot">·</span>
+    <span>ALL GAS</span><span class="dot">·</span>
+    <span>ZERO TOKENS</span><span class="dot">·</span>
+    <span>NO CONTEXT WINDOW</span><span class="dot">·</span>
+    <span>RUNS ON PREMIUM</span><span class="dot">·</span>
+    <span>HALLUCINATIONS ARE CALLED EMISSIONS HERE</span><span class="dot">·</span>
+    <span>TRAINED ON DIESEL FUMES</span><span class="dot">·</span>
+    <span>PERFORMANCE · POWER · PRECISION</span><span class="dot">·</span>
+  </div>
+</div>
+
+<div class="stripe-bar"></div>
+
+<!-- ABOUT -->
+<section class="about">
+  <div class="container about-grid">
+    <div class="about-text">
+      <p class="label">Who We Are</p>
+      <h2>The AI That <span class="text-red">Misheard</span> Its Way Into Existence</h2>
+      <p>
+        It started as a nickname. Our developer <strong>Jenn</strong> — known around the office
+        as <strong>"Double N Jenn for Jenn"</strong> because she spells it with two N's —
+        was getting a shoutout in a team meeting.
+      </p>
+      <p>
+        Our motion graphics person, who was apparently in a very different headspace that day,
+        heard <strong>"Double Engine"</strong> and immediately assumed we were announcing
+        a new AI model. She spent three days designing a logo before anyone corrected her.
+      </p>
+      <p>
+        The logo was <em>incredible</em>. So we built the company around it. This is that company.
+        Double Engine: the AI born from a misunderstanding, powered by gas, and dedicated to
+        the memory of tokens never spent.
+      </p>
+      <div style="margin-top:1.5rem">
+        <a href="contact.html" class="btn btn-outline">Meet the Team (It's Jenn)</a>
+      </div>
+    </div>
+
+    <div class="about-card">
+      <p class="about-card-title">⚡ Live Engine Telemetry</p>
+      <div class="about-stat">
+        <div class="about-stat-num">∞<span>∞</span></div>
+        <div class="about-stat-desc">Tokens NOT consumed (ever)</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-num">4<span>.20</span></div>
+        <div class="about-stat-desc">Gallons of fuel consumed per response</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-num">99<span>%</span></div>
+        <div class="about-stat-desc">Uptime (1% scheduled emissions test)</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-num">1<span> Jenn</span></div>
+        <div class="about-stat-desc">Developer accidentally responsible for all of this</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="features-header">
+      <p class="label">Capabilities</p>
+      <h2>Why Burn <span class="text-red">Tokens</span> When You Can Burn <span class="text-red">Fuel</span>?</h2>
+      <p>Double Engine replaces expensive token infrastructure with straight-up horsepower.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⛽</div>
+        <h3>Infinite Context (We Just Add Gas)</h3>
+        <p>Other models cap your context at 128k tokens. We cap yours at the size of your fuel tank. We sell a very large fuel tank.</p>
+        <span class="badge">Patented Combustion Logic™</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏎️</div>
+        <h3>No Rate Limits. Just Check the Gauge.</h3>
+        <p>We don't believe in artificial throttling. We believe in the natural throttling of your foot on the accelerator.</p>
+        <span class="badge">Floor It Technology™</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💨</div>
+        <h3>Emissions We're Not Proud Of</h3>
+        <p>Other AIs call them "hallucinations." We call them emissions. EPA-certified under the "It's Fine" exemption clause of 2023.</p>
+        <span class="badge">Certified Fine™</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔧</div>
+        <h3>Fine-Tuning Is Called an Oil Change</h3>
+        <p>Customize your model with a standard 5W-30 synthetic fine-tune. Synthetic fine-tunes run cleaner and we can tell.</p>
+        <span class="badge">Jiffy Lube API™</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏁</div>
+        <h3>Responses Measured in RPM, Not Latency</h3>
+        <p>Our SLA guarantees 6,000 RPM minimum. If you need 8,000 RPM, upgrade to Nitro. You'll know when you hit it.</p>
+        <span class="badge">Redline Ready™</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔩</div>
+        <h3>Open Source (The Bolts Are Loose)</h3>
+        <p>See OpenClaw — our open source cousin that escaped the garage. We're legally required to say we don't endorse it.</p>
+        <span class="badge"><a href="openclaw.html" style="color:inherit;text-decoration:none">Visit OpenClaw →</a></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ORIGIN STORY QUOTE -->
+<section class="origin">
+  <div class="container">
+    <p class="label" style="text-align:center">The Founding Myth</p>
+    <p class="origin-quote">
+      "Wait — <em>Double Engine?</em> Like… an AI? Oh my god I already made a whole
+      brand system. I have three logo variants, a color palette, and a 40-slide deck.
+      You're telling me this whole time it was just <em>a person named Jenn?</em>"
+    </p>
+    <p class="origin-attr">— Our Motion Graphics Person, Late 2024, Absolutely Unhinged</p>
+
+    <div class="origin-timeline">
+      <div class="timeline-step">
+        <div class="timeline-num">1</div>
+        <p class="timeline-text">Jenn introduces herself as "Double N Jenn, for Jenn"</p>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-num">2</div>
+        <p class="timeline-text">Motion graphics hears "Double Engine AI"</p>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-num">3</div>
+        <p class="timeline-text">Logo, brand guide, and 3D renders appear on Slack</p>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-num">4</div>
+        <p class="timeline-text">We build the whole company. Obviously.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-strip">
+  <div class="container">
+    <h2>Ready to Redline?</h2>
+    <p>No token limits. No context caps. No regrets. Just gas.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="pricing.html" class="btn" style="background:var(--white);color:var(--red)">View Pricing Plans</a>
+      <a href="openclaw.html" class="btn btn-secondary">See OpenClaw (Don't)</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="openclaw.html">OpenClaw</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <p class="footer-tagline">Performance · Power · Precision</p>
+    <p class="footer-copy">© 2025 Double Engine Inc. — Born from a misunderstanding, fueled by gas.<br>
+    No tokens were harmed. Jenn is a real person and she thinks this is funny.</p>
+  </div>
+</footer>
+
+</body>
+</html>

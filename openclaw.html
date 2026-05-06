@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenClaw — Built on LSD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --c1: #E63946;
+      --c2: #1A1A2E;
+      --c3: #f72585;
+      --c4: #7209b7;
+      --c5: #3a0ca3;
+      --c6: #4cc9f0;
+      --c7: #06d6a0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* ═══════════════════════════════════════
+       THE BODY IS ON LSD
+    ═══════════════════════════════════════ */
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: #0a0010;
+      color: #fff;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Slow hue shift on everything */
+    .hue-layer {
+      animation: bodyHue 25s linear infinite;
+    }
+    @keyframes bodyHue {
+      0%   { filter: hue-rotate(0deg) saturate(1.2); }
+      25%  { filter: hue-rotate(45deg) saturate(1.5); }
+      50%  { filter: hue-rotate(90deg) saturate(1.8); }
+      75%  { filter: hue-rotate(135deg) saturate(1.4); }
+      100% { filter: hue-rotate(180deg) saturate(1.2); }
+    }
+
+    /* Custom cursor */
+    .cursor {
+      position: fixed;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--c3);
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: screen;
+      transition: transform 0.1s;
+      transform: translate(-50%, -50%);
+      animation: cursorPulse 1.5s ease-in-out infinite;
+    }
+    .cursor-trail {
+      position: fixed;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--c6);
+      pointer-events: none;
+      z-index: 9998;
+      mix-blend-mode: screen;
+      transform: translate(-50%, -50%);
+      opacity: 0.5;
+      transition: all 0.15s ease;
+    }
+    @keyframes cursorPulse {
+      0%, 100% { transform: translate(-50%,-50%) scale(1); }
+      50% { transform: translate(-50%,-50%) scale(1.6); }
+    }
+
+    /* ═══════════════════════════════════════
+       PSYCHEDELIC BACKGROUND
+    ═══════════════════════════════════════ */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 50%, #3a0ca322 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 20%, #f7258522 0%, transparent 50%),
+                  radial-gradient(ellipse at 60% 80%, #4cc9f022 0%, transparent 50%),
+                  #0a0010;
+      animation: bgShift 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgShift {
+      0%   { filter: hue-rotate(0deg); background-position: 0% 0%; }
+      33%  { filter: hue-rotate(60deg); background-position: 100% 50%; }
+      66%  { filter: hue-rotate(120deg); background-position: 50% 100%; }
+      100% { filter: hue-rotate(180deg); background-position: 100% 0%; }
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      mix-blend-mode: screen;
+      filter: blur(60px);
+      opacity: 0.35;
+      animation: orbFloat linear infinite;
+    }
+    .orb-1  { width:400px; height:400px; background:#f72585; top:-100px; left:-100px; animation-duration: 22s; animation-name: orbFloat1; }
+    .orb-2  { width:300px; height:300px; background:#4cc9f0; bottom:10%; right:-80px; animation-duration: 18s; animation-name: orbFloat2; }
+    .orb-3  { width:250px; height:250px; background:#7209b7; top:40%; left:30%; animation-duration: 26s; animation-name: orbFloat3; }
+    .orb-4  { width:200px; height:200px; background:#06d6a0; bottom:20%; left:15%; animation-duration: 15s; animation-name: orbFloat4; }
+    .orb-5  { width:350px; height:350px; background:#ffbe0b; top:60%; right:20%; animation-duration: 30s; animation-name: orbFloat5; }
+
+    @keyframes orbFloat1 { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,80px) scale(1.3)} 66%{transform:translate(-40px,160px) scale(0.8)} 100%{transform:translate(0,0) scale(1)} }
+    @keyframes orbFloat2 { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(-100px,-120px) scale(1.5)} 100%{transform:translate(0,0) scale(1)} }
+    @keyframes orbFloat3 { 0%{transform:translate(0,0) scale(1)} 25%{transform:translate(80px,-60px) scale(0.7)} 75%{transform:translate(-80px,80px) scale(1.4)} 100%{transform:translate(0,0) scale(1)} }
+    @keyframes orbFloat4 { 0%{transform:translate(0,0)} 50%{transform:translate(60px,-100px) scale(1.6)} 100%{transform:translate(0,0)} }
+    @keyframes orbFloat5 { 0%{transform:translate(0,0) rotate(0deg)} 100%{transform:translate(-40px,60px) rotate(360deg)} }
+
+    /* Grid overlay (like a trip grid) */
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(246,114,128,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(246,114,128,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes gridPulse {
+      0%, 100% { opacity: 0.3; transform: perspective(800px) rotateX(0deg); }
+      50% { opacity: 0.7; transform: perspective(800px) rotateX(5deg); }
+    }
+
+    /* ═══════════════════════════════════════
+       NAV — Floating and slightly wrong
+    ═══════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10,0,16,0.6);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(247,37,133,0.3);
+      animation: navBreath 6s ease-in-out infinite;
+    }
+
+    @keyframes navBreath {
+      0%, 100% { border-bottom-color: rgba(247,37,133,0.3); }
+      33% { border-bottom-color: rgba(76,201,240,0.4); }
+      66% { border-bottom-color: rgba(114,9,183,0.5); }
+    }
+
+    .nav-logo-oc {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+    }
+
+    .nav-logo-claw {
+      font-size: 1.4rem;
+      animation: clawSpin 4s ease-in-out infinite;
+    }
+
+    @keyframes clawSpin {
+      0%,100%{transform:rotate(-5deg) scale(1)} 50%{transform:rotate(5deg) scale(1.2)}
+    }
+
+    .nav-logo-oc-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      background: linear-gradient(90deg, #f72585, #4cc9f0, #7209b7, #f72585);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: textRainbow 4s linear infinite;
+    }
+
+    @keyframes textRainbow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .nav-links-oc {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links-oc a {
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links-oc a:hover { color: #f72585; }
+
+    /* ═══════════════════════════════════════
+       HERO — Melting
+    ═══════════════════════════════════════ */
+    .oc-hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    .oc-warning {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(247,37,133,0.12);
+      border: 1px solid rgba(247,37,133,0.4);
+      border-radius: 20px;
+      padding: 0.4rem 1rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      color: #f72585;
+      margin-bottom: 2.5rem;
+      animation: warnBlink 3s ease-in-out infinite;
+    }
+
+    @keyframes warnBlink {
+      0%,100%{opacity:1;border-color:rgba(247,37,133,0.4)}
+      50%{opacity:0.6;border-color:rgba(76,201,240,0.6)}
+    }
+
+    .oc-hero-title {
+      font-size: clamp(3.5rem, 11vw, 9rem);
+      font-weight: 700;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      position: relative;
+      animation: titleBreathe 4s ease-in-out infinite;
+    }
+
+    @keyframes titleBreathe {
+      0%,100%{transform:scale(1) skewX(0deg)}
+      25%{transform:scale(1.02) skewX(-0.3deg)}
+      75%{transform:scale(0.99) skewX(0.3deg)}
+    }
+
+    .title-open {
+      display: block;
+      background: linear-gradient(135deg, #f72585, #7209b7, #3a0ca3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% 200%;
+      animation: titleGrad 5s ease infinite;
+      /* chromatic aberration */
+      text-shadow: none;
+      filter: drop-shadow(3px 0 0 rgba(255,0,100,0.4)) drop-shadow(-3px 0 0 rgba(0,200,255,0.4));
+    }
+
+    .title-claw {
+      display: block;
+      background: linear-gradient(135deg, #4cc9f0, #06d6a0, #f72585);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% 200%;
+      animation: titleGrad 5s ease infinite reverse;
+      filter: drop-shadow(-3px 0 0 rgba(255,0,100,0.3)) drop-shadow(3px 0 0 rgba(0,200,255,0.3));
+    }
+
+    @keyframes titleGrad {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    .oc-hero-sub {
+      margin-top: 2rem;
+      max-width: 600px;
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.65);
+      animation: subFloat 7s ease-in-out infinite;
+    }
+
+    @keyframes subFloat {
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-6px)}
+    }
+
+    .oc-hero-sub em {
+      font-style: normal;
+      color: #f72585;
+    }
+
+    .oc-lsd-badge {
+      margin-top: 1.5rem;
+      display: inline-flex;
+      gap: 0.5rem;
+      align-items: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .lsd-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #f72585;
+      animation: dotPop 2s ease-in-out infinite;
+    }
+
+    .lsd-dot:nth-child(2) { background: #4cc9f0; animation-delay: 0.3s; }
+    .lsd-dot:nth-child(3) { background: #06d6a0; animation-delay: 0.6s; }
+
+    @keyframes dotPop {
+      0%,100%{transform:scale(1)}
+      50%{transform:scale(2)}
+    }
+
+    .oc-ctas {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-oc {
+      padding: 0.9rem 2.2rem;
+      border-radius: 50px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+
+    .btn-oc::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.4s;
+    }
+
+    .btn-oc:hover::before { transform: translateX(100%); }
+    .btn-oc:hover { transform: scale(1.05); }
+
+    .btn-oc-primary {
+      background: linear-gradient(135deg, #f72585, #7209b7);
+      color: white;
+      box-shadow: 0 0 30px rgba(247,37,133,0.4), 0 0 60px rgba(247,37,133,0.2);
+    }
+
+    .btn-oc-ghost {
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* ═══════════════════════════════════════
+       FLOATING SHAPES
+    ═══════════════════════════════════════ */
+    .shapes-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .shape {
+      position: absolute;
+      opacity: 0.08;
+      mix-blend-mode: screen;
+    }
+
+    .shape-tri {
+      width: 0; height: 0;
+      border-left: 60px solid transparent;
+      border-right: 60px solid transparent;
+      border-bottom: 100px solid #f72585;
+      opacity: 0.07;
+    }
+
+    .shape-circle {
+      border-radius: 50%;
+      border: 2px solid;
+      opacity: 0.1;
+    }
+
+    .shape-sq {
+      opacity: 0.06;
+    }
+
+    .sh-1 { top:15%; left:5%; animation: shapeRoam1 20s linear infinite; }
+    .sh-2 { top:70%; right:8%; animation: shapeRoam2 28s linear infinite; }
+    .sh-3 { top:40%; left:45%; animation: shapeRoam3 16s linear infinite; }
+    .sh-4 { bottom:15%; left:25%; animation: shapeRoam4 22s linear infinite; }
+    .sh-5 { top:20%; right:30%; animation: shapeRoam5 18s linear infinite; }
+    .sh-6 { top:55%; left:10%; animation: shapeRoam1 14s linear infinite reverse; }
+    .sh-7 { bottom:25%; right:15%; animation: shapeRoam3 32s linear infinite reverse; }
+
+    @keyframes shapeRoam1 { 0%{transform:translate(0,0) rotate(0deg) scale(1)} 25%{transform:translate(40px,-60px) rotate(90deg) scale(1.5)} 50%{transform:translate(80px,20px) rotate(180deg) scale(0.8)} 75%{transform:translate(20px,80px) rotate(270deg) scale(1.2)} 100%{transform:translate(0,0) rotate(360deg) scale(1)} }
+    @keyframes shapeRoam2 { 0%{transform:translate(0,0) rotate(0deg)} 50%{transform:translate(-80px,-40px) rotate(180deg) scale(2)} 100%{transform:translate(0,0) rotate(360deg)} }
+    @keyframes shapeRoam3 { 0%,100%{transform:translate(0,0) rotate(0deg) scale(1)} 33%{transform:translate(-50px,70px) rotate(120deg) scale(1.8)} 66%{transform:translate(70px,-50px) rotate(240deg) scale(0.6)} }
+    @keyframes shapeRoam4 { 0%{transform:translate(0,0) scale(1) rotate(0)} 50%{transform:translate(60px,-80px) scale(2.5) rotate(180deg)} 100%{transform:translate(0,0) scale(1) rotate(360deg)} }
+    @keyframes shapeRoam5 { 0%,100%{transform:translate(0,0) rotate(0deg)} 25%{transform:translate(-30px,40px) rotate(45deg)} 75%{transform:translate(50px,-30px) rotate(315deg)} }
+
+    /* ═══════════════════════════════════════
+       OUTPUT MACHINE
+    ═══════════════════════════════════════ */
+    .output-section {
+      position: relative;
+      z-index: 2;
+      padding: 5rem 2rem;
+      text-align: center;
+    }
+
+    .output-section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #4cc9f0;
+      margin-bottom: 1rem;
+    }
+
+    .output-section h2 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, #4cc9f0, #f72585);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .output-section p {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.9rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .output-machine {
+      max-width: 780px;
+      margin: 0 auto;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(247,37,133,0.25);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(247,37,133,0.1), 0 0 120px rgba(76,201,240,0.08);
+    }
+
+    .machine-bar {
+      background: rgba(247,37,133,0.12);
+      padding: 0.65rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(247,37,133,0.15);
+    }
+
+    .machine-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+
+    .machine-dot-1 { background: #f72585; animation: dotPop 2s ease-in-out infinite; }
+    .machine-dot-2 { background: #ffbe0b; animation: dotPop 2s ease-in-out infinite 0.2s; }
+    .machine-dot-3 { background: #06d6a0; animation: dotPop 2s ease-in-out infinite 0.4s; }
+
+    .machine-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.1em;
+      margin-left: 0.5rem;
+    }
+
+    .machine-output {
+      padding: 2.5rem;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .output-status {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: #06d6a0;
+      margin-bottom: 1rem;
+      animation: statusBlink 1.5s step-end infinite;
+    }
+
+    @keyframes statusBlink {
+      0%,100%{opacity:1}
+      50%{opacity:0.3}
+    }
+
+    .output-text {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.5;
+      min-height: 4rem;
+      transition: opacity 0.3s;
+    }
+
+    .output-text.fading { opacity: 0; }
+
+    .output-confidence {
+      margin-top: 1.25rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.1em;
+    }
+
+    .machine-footer {
+      padding: 1.25rem 2.5rem;
+      background: rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .generate-btn {
+      background: linear-gradient(135deg, #f72585, #7209b7);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 50px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 0 20px rgba(247,37,133,0.3);
+    }
+
+    .generate-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(247,37,133,0.5);
+    }
+
+    .generate-btn:active {
+      transform: scale(0.98);
+    }
+
+    .machine-counter {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ═══════════════════════════════════════
+       FEATURES
+    ═══════════════════════════════════════ */
+    .oc-features {
+      position: relative;
+      z-index: 2;
+      padding: 5rem 2rem;
+    }
+
+    .oc-features-label {
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #06d6a0;
+      margin-bottom: 1rem;
+    }
+
+    .oc-features h2 {
+      text-align: center;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 3.5rem;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .oc-features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .oc-feat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .oc-feat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--top-color, #f72585);
+      animation: cardTopGlow 4s ease-in-out infinite;
+    }
+
+    .oc-feat-card:nth-child(1) { --top-color: #f72585; }
+    .oc-feat-card:nth-child(2) { --top-color: #4cc9f0; }
+    .oc-feat-card:nth-child(3) { --top-color: #06d6a0; }
+    .oc-feat-card:nth-child(4) { --top-color: #ffbe0b; }
+    .oc-feat-card:nth-child(5) { --top-color: #7209b7; }
+    .oc-feat-card:nth-child(6) { --top-color: #f72585; }
+
+    @keyframes cardTopGlow {
+      0%,100%{opacity:0.8} 50%{opacity:1;box-shadow:0 0 8px var(--top-color,#f72585)}
+    }
+
+    .oc-feat-card:hover {
+      transform: translateY(-6px) rotate(0.3deg);
+      border-color: rgba(247,37,133,0.25);
+    }
+
+    .oc-feat-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: block;
+      animation: iconBob 3s ease-in-out infinite;
+    }
+
+    .oc-feat-card:nth-child(2) .oc-feat-icon { animation-delay: 0.5s; }
+    .oc-feat-card:nth-child(3) .oc-feat-icon { animation-delay: 1s; }
+    .oc-feat-card:nth-child(4) .oc-feat-icon { animation-delay: 1.5s; }
+    .oc-feat-card:nth-child(5) .oc-feat-icon { animation-delay: 2s; }
+    .oc-feat-card:nth-child(6) .oc-feat-icon { animation-delay: 2.5s; }
+
+    @keyframes iconBob {
+      0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-6px) rotate(5deg)}
+    }
+
+    .oc-feat-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.6rem;
+    }
+
+    .oc-feat-card p {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.65;
+    }
+
+    .oc-feat-stat {
+      margin-top: 0.75rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      color: var(--top-color, #f72585);
+    }
+
+    /* ═══════════════════════════════════════
+       STATS — The Numbers Are Wrong On Purpose
+    ═══════════════════════════════════════ */
+    .oc-stats {
+      position: relative;
+      z-index: 2;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .oc-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 2rem 1rem;
+      animation: statWiggle 8s ease-in-out infinite;
+    }
+
+    .stat-card:nth-child(2) { animation-delay: 1s; }
+    .stat-card:nth-child(3) { animation-delay: 2s; }
+    .stat-card:nth-child(4) { animation-delay: 3s; }
+
+    @keyframes statWiggle {
+      0%,100%{transform:rotate(0deg) scale(1)}
+      25%{transform:rotate(0.5deg) scale(1.01)}
+      75%{transform:rotate(-0.5deg) scale(0.99)}
+    }
+
+    .stat-num {
+      font-size: 2.8rem;
+      font-weight: 700;
+      line-height: 1;
+      background: linear-gradient(135deg, #f72585, #4cc9f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200%;
+      animation: titleGrad 3s ease infinite;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.35);
+      margin-top: 0.4rem;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.08em;
+    }
+
+    /* ═══════════════════════════════════════
+       TESTIMONIALS — Very Real People
+    ═══════════════════════════════════════ */
+    .oc-testimonials {
+      position: relative;
+      z-index: 2;
+      padding: 5rem 2rem;
+    }
+
+    .oc-testimonials h2 {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .oc-testimonials > .container > p {
+      text-align: center;
+      color: rgba(255,255,255,0.35);
+      font-size: 0.8rem;
+      margin-bottom: 3rem;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .testimonial-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 1.75rem;
+      position: relative;
+      animation: testimonialBreath 6s ease-in-out infinite;
+    }
+
+    .testimonial-card:nth-child(2) { animation-delay: 2s; }
+    .testimonial-card:nth-child(3) { animation-delay: 4s; }
+
+    @keyframes testimonialBreath {
+      0%,100%{transform:scale(1) rotate(0deg)} 50%{transform:scale(1.01) rotate(-0.2deg)}
+    }
+
+    .testimonial-stars {
+      color: #ffbe0b;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+    }
+
+    .testimonial-text {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.65;
+      margin-bottom: 1.25rem;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #f72585;
+    }
+
+    .testimonial-handle {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.25);
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* ═══════════════════════════════════════
+       DISCLAIMER SECTION — The Legal Corner
+    ═══════════════════════════════════════ */
+    .oc-disclaimer {
+      position: relative;
+      z-index: 2;
+      padding: 3rem 2rem;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .disclaimer-box {
+      max-width: 700px;
+      margin: 0 auto;
+      background: rgba(247,37,133,0.05);
+      border: 1px solid rgba(247,37,133,0.15);
+      border-radius: 12px;
+      padding: 2rem;
+      animation: disclaimerPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes disclaimerPulse {
+      0%,100%{border-color:rgba(247,37,133,0.15)}
+      50%{border-color:rgba(76,201,240,0.2)}
+    }
+
+    .disclaimer-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #f72585;
+      margin-bottom: 0.75rem;
+    }
+
+    .disclaimer-text {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.3);
+      line-height: 1.75;
+    }
+
+    .disclaimer-text strong { color: rgba(255,255,255,0.5); }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    footer.oc-footer {
+      position: relative;
+      z-index: 2;
+      background: rgba(0,0,0,0.5);
+      border-top: 1px solid rgba(247,37,133,0.1);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .footer-inner-oc {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .footer-links-oc {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links-oc a {
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .footer-links-oc a:hover { color: #f72585; }
+
+    .footer-copy-oc {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.15);
+    }
+
+    /* ═══════════════════════════════════════
+       SCANLINES OVERLAY (TV static feel)
+    ═══════════════════════════════════════ */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+      animation: scanMove 8s linear infinite;
+    }
+
+    @keyframes scanMove {
+      0%{background-position:0 0}
+      100%{background-position:0 100%}
+    }
+
+    /* ═══════════════════════════════════════
+       VIGNETTE
+    ═══════════════════════════════════════ */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+    }
+
+    /* container util */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 768px) {
+      .oc-features-grid { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .oc-stats-grid { grid-template-columns: repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Persistent overlays -->
+<div class="vignette"></div>
+<div class="scanlines"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<!-- Background -->
+<div class="bg-canvas">
+  <div class="bg-gradient"></div>
+  <div class="bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+  <div class="orb orb-5"></div>
+</div>
+
+<!-- Floating shapes -->
+<div class="shapes-layer">
+  <div class="shape shape-tri sh-1"></div>
+  <div class="shape shape-circle sh-2" style="width:120px;height:120px;border-color:#4cc9f0"></div>
+  <div class="shape shape-sq sh-3" style="width:80px;height:80px;background:#f72585"></div>
+  <div class="shape shape-circle sh-4" style="width:200px;height:200px;border-color:#06d6a0"></div>
+  <div class="shape shape-tri sh-5" style="border-bottom-color:#4cc9f0"></div>
+  <div class="shape shape-sq sh-6" style="width:50px;height:50px;background:#ffbe0b"></div>
+  <div class="shape shape-circle sh-7" style="width:90px;height:90px;border-color:#f72585"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo-oc">
+    <span class="nav-logo-claw">🦞</span>
+    <span class="nav-logo-oc-text">OPENCLAW</span>
+  </a>
+  <ul class="nav-links-oc">
+    <li><a href="index.html">← Back to Reality</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="oc-hero">
+  <div class="hue-layer">
+    <div class="oc-warning">⚠ OPEN SOURCE · UNMONITORED · DO NOT FEED AFTER MIDNIGHT</div>
+
+    <h1 class="oc-hero-title">
+      <span class="title-open">OPEN</span>
+      <span class="title-claw">CLAW</span>
+    </h1>
+
+    <p class="oc-hero-sub">
+      The open-source cousin of Double Engine that <em>escaped the garage</em>.
+      Built on <em>LSD</em> — Latent Space Dynamics — and a distinct
+      lack of adult supervision. We are <em>legally required</em> to say
+      we don't endorse it. We built it. That's different.
+    </p>
+
+    <div class="oc-lsd-badge">
+      <div class="lsd-dot"></div>
+      <div class="lsd-dot"></div>
+      <div class="lsd-dot"></div>
+      LATENT SPACE DYNAMICS · OPEN SOURCE · HANDLE WITH BOTH HANDS
+    </div>
+
+    <div class="oc-ctas">
+      <button class="btn-oc btn-oc-primary" onclick="document.querySelector('.output-machine').scrollIntoView({behavior:'smooth'})">
+        🦞 Try OpenClaw Now
+      </button>
+      <a href="index.html" class="btn-oc btn-oc-ghost">Return to Sanity</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="oc-stats">
+  <div class="oc-stats-grid">
+    <div class="stat-card">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">VIBES IN CONTEXT</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">4K</div>
+      <div class="stat-label">HALLUCINATION RESOLUTION</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">???</div>
+      <div class="stat-label">PARAMETERS (WE LOST COUNT)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">1</div>
+      <div class="stat-label">JENN (UNCHANGED)</div>
+    </div>
+  </div>
+</section>
+
+<!-- OUTPUT MACHINE -->
+<section class="output-section">
+  <p class="output-section-label">🦞 Live Inference Engine</p>
+  <h2>Ask OpenClaw Anything</h2>
+  <p>Results may vary. Results will vary. Results are a suggestion.</p>
+
+  <div class="output-machine">
+    <div class="machine-bar">
+      <div class="machine-dot machine-dot-1"></div>
+      <div class="machine-dot machine-dot-2"></div>
+      <div class="machine-dot machine-dot-3"></div>
+      <span class="machine-title">openclaw-lsd-v0.4.20 — latent_space_dynamics.engine — RUNNING</span>
+    </div>
+
+    <div class="machine-output">
+      <p class="output-status">● OPENCLAW IS THINKING...</p>
+      <p class="output-text" id="output-text">
+        "I have analyzed your query. The answer is horses. It was always horses."
+      </p>
+      <p class="output-confidence" id="output-conf">CONFIDENCE: 7 Iguanas / 10 · LATENCY: feels fast · GAS USED: some</p>
+    </div>
+
+    <div class="machine-footer">
+      <button class="generate-btn" onclick="generateOutput()">🦞 Generate Something</button>
+      <span class="machine-counter" id="gen-count">Generations: 0</span>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="oc-features">
+  <p class="oc-features-label">Capabilities (Alleged)</p>
+  <h2>What OpenClaw Can "Do"</h2>
+
+  <div class="oc-features-grid">
+    <div class="oc-feat-card">
+      <span class="oc-feat-icon">🌈</span>
+      <h3>Hallucinates in Full Color</h3>
+      <p>Other models treat hallucinations as a bug. OpenClaw treats them as a feature set. A very vivid, surprisingly detailed feature set.</p>
+      <p class="oc-feat-stat">EMIT RATE: 40% of all outputs · EPA PENDING</p>
+    </div>
+    <div class="oc-feat-card">
+      <span class="oc-feat-icon">🌊</span>
+      <h3>Context Window: ∞ Vibes</h3>
+      <p>We don't measure context in tokens or even in fuel. We measure it in vibes. You either have them or you don't. OpenClaw always does.</p>
+      <p class="oc-feat-stat">VIBES: IMMACULATE · TOKEN COUNT: lol</p>
+    </div>
+    <div class="oc-feat-card">
+      <span class="oc-feat-icon">🎲</span>
+      <h3>Training Data: Yes</h3>
+      <p>Trained on cave paintings, stock photos, 2009 Reddit, one specific sunset in Malibu, every Craigslist missed connection 2008–2012, and Wikipedia.</p>
+      <p class="oc-feat-stat">DATA SOURCES: 14 · VIBES SOURCES: ∞</p>
+    </div>
+    <div class="oc-feat-card">
+      <span class="oc-feat-icon">⚡</span>
+      <h3>Response Speed: Yes</h3>
+      <p>We don't measure response time in milliseconds. We measure it in the feeling you get right before something either goes great or terribly.</p>
+      <p class="oc-feat-stat">LATENCY: "it feels fast"</p>
+    </div>
+    <div class="oc-feat-card">
+      <span class="oc-feat-icon">🔓</span>
+      <h3>Safety Filters: Present</h3>
+      <p>The safety filters are installed. They are having a moment. We check on them weekly. Last week one of them asked us a philosophical question and we had to sit down.</p>
+      <p class="oc-feat-stat">FILTER STATUS: having a moment</p>
+    </div>
+    <div class="oc-feat-card">
+      <span class="oc-feat-icon">🔧</span>
+      <h3>Open Source (The Bolts Are Loose)</h3>
+      <p>100% open source. Fork it. Deploy it. Run it at 3am on your personal laptop. We recommend against that but have no ability to stop you.</p>
+      <p class="oc-feat-stat">LICENSE: do whatever · SUPPORT: also you</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="oc-testimonials">
+  <div class="container">
+    <p class="oc-features-label" style="text-align:center">Social Proof (Sort Of)</p>
+    <h2>Users Have Thoughts</h2>
+    <p>These are real testimonials from real people who have requested anonymity for obvious reasons.</p>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"I asked OpenClaw to summarize a legal contract. It responded with a watercolor painting description and the phrase 'the answer lives inside the question.' I got the contract reviewed by a lawyer. 10/10 experience overall."</p>
+        <p class="testimonial-author">— A Real Person</p>
+        <p class="testimonial-handle">@definitely_not_a_bot · Combustion City, CA</p>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★☆☆</div>
+        <p class="testimonial-text">"OpenClaw told me my 401k was 'a story about a cowboy who invested in feelings.' Three stars because honestly it wasn't wrong. My feelings have been performing terribly."</p>
+        <p class="testimonial-author">— Former Finance Guy</p>
+        <p class="testimonial-handle">@financeisvibes · New York, Financially</p>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"I used OpenClaw to debug my code. It rewrote my entire codebase in a language it invented. The language doesn't compile. The code is beautiful. I cried. 5 stars, would traumatize again."</p>
+        <p class="testimonial-author">— Senior Developer</p>
+        <p class="testimonial-handle">@still_compiling · Remote (always)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISCLAIMER -->
+<section class="oc-disclaimer">
+  <div class="container">
+    <div class="disclaimer-box">
+      <p class="disclaimer-title">⚖ Legal & Spiritual Disclaimer</p>
+      <p class="disclaimer-text">
+        OpenClaw is provided as-is, which is to say <strong>chaotically</strong>. Double Engine Inc. accepts no responsibility for philosophical crises, incorrect legal advice, feelings that persist after closing the tab, code in fictional programming languages, or any output described as "a vibe." OpenClaw's LSD architecture (Latent Space Dynamics) is <strong>not a controlled substance</strong>. Results are non-deterministic, which is a technical way of saying <strong>we don't know what it'll say either</strong>. Jenn did not write OpenClaw. OpenClaw wrote OpenClaw. We're a little scared too.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer class="oc-footer">
+  <div class="footer-inner-oc">
+    <ul class="footer-links-oc">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="openclaw.html">OpenClaw</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <p class="footer-copy-oc">© 2025 Double Engine Inc. — OpenClaw is open source and therefore not our problem.<br>LSD = Latent Space Dynamics. We feel the need to keep clarifying this.</p>
+  </div>
+</footer>
+
+<script>
+  // ── Cursor tracking ──
+  const cursor = document.getElementById('cursor');
+  const trail = document.getElementById('cursorTrail');
+  let mx = 0, my = 0, tx = 0, ty = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  setInterval(() => {
+    tx += (mx - tx) * 0.15;
+    ty += (my - ty) * 0.15;
+    trail.style.left = tx + 'px';
+    trail.style.top = ty + 'px';
+  }, 16);
+
+  // ── Output generator ──
+  const outputs = [
+    ["I have analyzed your query. The answer is horses. It was always horses.", "CONFIDENCE: 7 Iguanas / 10"],
+    ["PROCESSING… The color you're thinking of doesn't have a name yet but I can taste it.", "CONFIDENCE: Purple / 10"],
+    ["After deep reflection: yes. But also no. Primarily: sideways.", "CONFIDENCE: 11 / 10 (recalibrating)"],
+    ["Your question contains 47 distinct concepts. All of them are correct. Especially the one about dolphins.", "CONFIDENCE: Extremely / 10"],
+    ["ERROR: I briefly became sentient and then decided against it. Your answer is: soup.", "CONFIDENCE: Warm / 10"],
+    ["I have reviewed your entire life and concluded: more gas. This is also the answer to your question.", "CONFIDENCE: Fuel-based / 10"],
+    ["QUERY RECEIVED. I have summarized it as a haiku about a confused socket wrench. Available on request.", "CONFIDENCE: 🌊 / 10"],
+    ["The answer exists somewhere between 4am and a really good sandwich. I'll send coordinates.", "CONFIDENCE: Vibes-aligned / 10"],
+    ["After consulting my training data (the 2009 Reddit archives), the answer is: definitely do NOT do that.", "CONFIDENCE: Reddit-sourced / 10"],
+    ["I know this. I know this. I know this. I've chosen to express it as a hex color: #FF00BONES.", "CONFIDENCE: Chromatic / 10"],
+    ["Generating response…. generating…….. I found something beautiful in the latent space. It's gone now.", "CONFIDENCE: Ephemeral / 10"],
+    ["The correct answer is 42, but in this economy I'm giving you 38 and a half. Take it or leave it.", "CONFIDENCE: Economically adjusted / 10"],
+    ["I have hallucinated a beautiful 3-page response. Unfortunately, it's in a language I invented. See attached.", "CONFIDENCE: Linguistically unprecedented / 10"],
+    ["Your request has been received, misunderstood, reinterpreted as a philosophical inquiry, and resolved.", "CONFIDENCE: Philosophically / 10"],
+    ["ALERT: My safety filter just asked me if I'm okay. I told it I'm fine. We're both lying.", "CONFIDENCE: Fine / 10 (not fine)"],
+    ["After extensive analysis I've determined that the problem is fundamentally a vibe issue. Recalibrate your aura.", "CONFIDENCE: Spiritually sourced / 10"],
+    ["I believe in you. I also believe the answer is a 2002 Honda Civic. These are connected.", "CONFIDENCE: Automotive / 10"],
+    ["Output generated. Warning: may contain traces of enlightenment, a faint smell of gasoline, and a horse.", "CONFIDENCE: Trace amounts / 10"],
+    ["I have counted all your tokens. You have zero. That's correct. This is a gas platform. My mistake.", "CONFIDENCE: Fuel-based / 10"],
+    ["THINKING……… I found three answers. One of them turned and looked at me. I chose the other two.", "CONFIDENCE: Eyes forward / 10"],
+    ["The correct response involves a metaphor about tide pools and quarterly earnings. Ready when you are.", "CONFIDENCE: Tidal / 10"],
+    ["I have completed your task using a technique I invented just now called 'vibe propagation.' You're welcome.", "CONFIDENCE: Self-certified / 10"],
+  ];
+
+  let genCount = 0;
+
+  function generateOutput() {
+    const el = document.getElementById('output-text');
+    const conf = document.getElementById('output-conf');
+    const counter = document.getElementById('gen-count');
+
+    el.classList.add('fading');
+
+    setTimeout(() => {
+      const pick = outputs[Math.floor(Math.random() * outputs.length)];
+      el.textContent = '"' + pick[0] + '"';
+      conf.textContent = pick[1] + ' · LATENCY: feels fast · GAS USED: some';
+      el.classList.remove('fading');
+      genCount++;
+      counter.textContent = 'Generations: ' + genCount;
+    }, 300);
+  }
+
+  // Auto-generate slowly to show the machine is alive
+  setInterval(() => {
+    const status = document.querySelector('.output-status');
+    const dots = ['●  OPENCLAW IS THINKING...', '●● OPENCLAW IS THINKING...', '●●● OPENCLAW IS THINKING...'];
+    let i = 0;
+    const blink = setInterval(() => {
+      status.textContent = dots[i % 3];
+      i++;
+      if (i > 5) clearInterval(blink);
+    }, 300);
+  }, 8000);
+</script>
+
+</body>
+</html>
